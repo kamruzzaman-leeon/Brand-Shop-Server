@@ -31,6 +31,7 @@ async function run() {
         // connect to Atlas cluste & collection
         const ProductCollection = client.db('BrandShopDB').collection('product')
         const BrandCollection = client.db('BrandShopDB').collection('brand')
+        const CartCollection = client.db('BrandShopDB').collection('cart')
 
         //data create
         app.post('/product', async (req, res) => {
@@ -48,7 +49,7 @@ async function run() {
             res.send(result);
         })
 
-        // data read
+        //all product read 
         app.get('/product', async (req, res) => {
             const cursor = ProductCollection.find()
             const result = await cursor.toArray();
@@ -56,7 +57,7 @@ async function run() {
         })
 
         // data read for a specific brand
-        app.get('/product/:brand', async (req, res) => {
+        app.get('/productbrand/:brand', async (req, res) => {
             const encodeBrand = req.params.brand;
             const brand = decodeURIComponent(encodeBrand);
             const query = { brand: brand };
@@ -65,7 +66,7 @@ async function run() {
         })
 
         // data read for a specific product
-        app.get('/productdetails/:id', async (req, res) => {
+        app.get('/product/:id', async (req, res) => {
             const id = req.params.id;
             const query = { _id: new ObjectId(id) }
             const result = await ProductCollection.findOne(query);
@@ -74,7 +75,7 @@ async function run() {
         })
 
         // product data update
-        app.put('/productdetails/:id', async (req, res) => {
+        app.put('/product/:id', async (req, res) => {
             const id = req.params.id;
             // console.log(id);
             const filter = { _id: new ObjectId(id) };
@@ -98,7 +99,36 @@ async function run() {
             res.send(result)
         })
 
+        app.post('/mycart',async(req,res)=>{
+            const cartItem = req.body;
+            console.log(cartItem);
+            const existingItem = await CartCollection.findOne({ product: cartItem.product, user: cartItem.user });
+            
+            if(existingItem){
+                res.status(400).json({error:("item already in the cart")});
+            }else{
+                const result= await CartCollection.insertOne(cartItem);
+                res.send(result)
+            }
+           
 
+        })
+        // all cart item read
+        app.get('/mycart', async (req, res) => {
+            const cursor = CartCollection.find()
+            const result = await cursor.toArray();
+            res.send(result);
+        })
+
+        app.delete('/mycart/:id',async(req,res)=>{
+            
+            const id =req.params.id;
+            console.log(id)
+            const query = {_id: new ObjectId(id) };
+            const result = await CartCollection.deleteOne(query);
+            console.log('data delete', result)
+            res.send(result);
+        })
 
 
 

@@ -8,8 +8,7 @@ This repository contains the server-side code for BrandShop, a web application f
 - [Project Structure](#project-structure)
 - [API Endpoints](#api-endpoints)
 - [Environment Variables](#environment-variables)
-- [Contributing](#contributing)
-- [License](#license)
+
 
 ## Prerequisites
 - Node.js and npm installed

@@ -32,6 +32,8 @@ async function run() {
         const ProductCollection = client.db('BrandShopDB').collection('product')
         const BrandCollection = client.db('BrandShopDB').collection('brand')
         const CartCollection = client.db('BrandShopDB').collection('cart')
+        const TestimonialCollection = client.db('BrandShopDB').collection('testimonial')
+        const AdvertisementCollection = client.db('BrandShopDB').collection('advertisement')
 
         //data create
         app.post('/product', async (req, res) => {
@@ -40,6 +42,19 @@ async function run() {
             const result = await ProductCollection.insertOne(newProduct);
             res.send(result);
 
+        })
+
+        // testimonial get from database
+        app.get('/testimonial', async (req, res) => {
+            const cursor = TestimonialCollection.find();
+            const result = await cursor.toArray()
+            res.send(result);
+        })
+
+        app.get('/advertisement', async (req, res) => {
+            const cursor = AdvertisementCollection.find();
+            const result = await cursor.toArray()
+            res.send(result);
         })
 
         // brand get from database
@@ -99,18 +114,18 @@ async function run() {
             res.send(result)
         })
 
-        app.post('/mycart',async(req,res)=>{
+        app.post('/mycart', async (req, res) => {
             const cartItem = req.body;
             console.log(cartItem);
             const existingItem = await CartCollection.findOne({ product: cartItem.product, user: cartItem.user });
-            
-            if(existingItem){
-                res.status(400).json({error:("item already in the cart")});
-            }else{
-                const result= await CartCollection.insertOne(cartItem);
+
+            if (existingItem) {
+                res.status(400).json({ error: ("item already in the cart") });
+            } else {
+                const result = await CartCollection.insertOne(cartItem);
                 res.send(result)
             }
-           
+
 
         })
         // all cart item read
@@ -120,11 +135,11 @@ async function run() {
             res.send(result);
         })
 
-        app.delete('/mycart/:id',async(req,res)=>{
-            
-            const id =req.params.id;
+        app.delete('/mycart/:id', async (req, res) => {
+
+            const id = req.params.id;
             console.log(id)
-            const query = {_id: new ObjectId(id) };
+            const query = { _id: new ObjectId(id) };
             const result = await CartCollection.deleteOne(query);
             console.log('data delete', result)
             res.send(result);
